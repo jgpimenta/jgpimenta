@@ -52,8 +52,8 @@ Aprendendo: IA Generativa | Python Avançado
 *   **Sistemas de Informação** - Universidade Mackenzie (2003 - 2008)
 *   **Python** - Santander Academy (2026)
 *   **Dominando a IA Generativa** - Inner AI (2025)
-*   **C#** - Alura (2021)
-*   **React** - Alura (2021)
+*   **C#** - Alura
+*   **React** - Alura
 *   Advanced Data Access with MS Visual Studio
 *   Core Data Access with MS-Visual Studio
 *   ABAP – Treinamento Interno
