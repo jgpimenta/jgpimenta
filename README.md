@@ -6,8 +6,7 @@ Engenheiro de Software Sênior com mais de **20 anos de experiência** em arquit
 Atualmente, direcionando minha expertise técnica para a **Engenharia de Dados**, unindo a disciplina da Engenharia de Software (Clean Code, Arquitetura, Performance) com manipulação avançada de dados e ETL.
 
 Focado em: Modernização de legados | Criação de pipelines de dados eficientes | Governança de Dados
-Aprendendo: IA Generativa | Python Avançado
-
+Aprendendo: IA Generativa | Python
 ---
 
 ### 🛠️ Tech Stack
