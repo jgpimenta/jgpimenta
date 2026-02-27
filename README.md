@@ -1,4 +1,4 @@
-# Olá, eu sou o Jaime Pimenta!
+# Jaime Pimenta!
 
 ![Engenheiro de Software/Dados](https://img.shields.io/badge/Engenheiro%20de%20Software/Dados-Analytics%20Engineer-blueviolet?style=flat-square)
 
