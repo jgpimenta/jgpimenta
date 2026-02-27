@@ -1,6 +1,6 @@
 # Olá, eu sou Jaime Pimenta! 👋
 
-![Engenheiro de Dados](https://img.shields.io/badge/Engenheiro%20de%20Dados-Analytics%20Engineer-blueviolet?style=flat-square)
+![Engenheiro de Software/Dados](https://img.shields.io/badge/Engenheiro%20de%20Dados-Analytics%20Engineer-blueviolet?style=flat-square)
 
 Engenheiro de Software Sênior com mais de **20 anos de experiência** em arquitetura de sistemas corporativos críticos.
 Atualmente, direcionando minha expertise técnica para a **Engenharia de Dados**, unindo a disciplina da Engenharia de Software (Clean Code, Arquitetura, Performance) com manipulação avançada de dados e ETL.
