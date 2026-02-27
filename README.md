@@ -57,28 +57,3 @@ Aprendendo: IA Generativa | Python Avançado
 *   Advanced Data Access with MS Visual Studio
 *   Core Data Access with MS-Visual Studio
 *   ABAP – Treinamento Interno
-
----
-
-### 🌐 Conecte-se Comigo!
-
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](<a href="https://www.linkedin.com/in/jgpimenta" target="_blank" style="text-decoration: underline;">https://www.linkedin.com/in/jgpimenta</a>)
-[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:jgpimenta@yahoo.com.br)
-
----
-
-### 📊 Estatísticas do GitHub (Opcional)
-
-Você pode adicionar um card com estatísticas do seu GitHub, como o Henrique tem. Para isso, você precisará de um serviço como o <a href="https://github.com/anuraghazra/github-readme-stats" target="_blank" style="text-decoration: underline;">GitHub Readme Stats</a>.
-
-```markdown
-<!-- Para adicionar estatísticas do GitHub (opcional) -->
-<!-- Substitua 'seu-usuario' pelo seu nome de usuário do GitHub -->
-<!--
-[![Jaime's GitHub Stats](https://github-readme-stats.vercel.app/api?username=seu-usuario&show_icons=true&theme=radical)](<a href="https://github.com/anuraghazra/github-readme-stats" target="_blank" style="text-decoration: underline;">https://github.com/anuraghazra/github-readme-stats</a>)
--->
-```
-*   **Como usar:** Remova os `<!--` e `-->` e substitua `seu-usuario` pelo seu nome de usuário do GitHub.
-
----
-
