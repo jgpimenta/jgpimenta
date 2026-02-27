@@ -7,6 +7,7 @@ Atualmente, direcionando minha expertise técnica para a **Engenharia de Dados**
 
 Focado em: Modernização de legados | Criação de pipelines de dados eficientes | Governança de Dados
 Aprendendo: IA Generativa | Python
+
 ---
 
 ### 🛠️ Tech Stack
