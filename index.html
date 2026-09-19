@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quiz: Orion e o Escuro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --primary: #3b82f6;
+            --correct-bg: #d1fae5;
+            --correct-border: #10b981;
+            --correct-text: #065f46;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #cbd5e1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        /* Container Responsivo */
+        .deck-stage {
+            width: 100%;
+            max-width: 1280px;
+            height: 100vh;
+            max-height: 720px;
+            background-color: var(--bg-color);
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            min-height: 100%;
+            padding: 60px 80px;
+            box-sizing: border-box;
+            flex-direction: column;
+            justify-content: center;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Tipografia Base */
+        h1 {
+            font-size: 56px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 16px;
+            text-align: center;
+            outline: none;
+        }
+
+        p.subtitle {
+            font-size: 22px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 48px;
+            outline: none;
+        }
+
+        h2.question-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 32px;
+            line-height: 1.4;
+            outline: none;
+        }
+
+        /* Grid de Opções */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .option {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px 20px;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-main);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+            outline: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: text;
+        }
+
+        .option:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+        }
+
+        .option.correct {
+            background-color: var(--correct-bg);
+            border-color: var(--correct-border);
+            color: var(--correct-text);
+        }
+
+        .option i {
+            display: none;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .option.correct i {
+            display: block;
+            color: var(--correct-border);
+        }
+
+        /* Botões e Controles */
+        .btn-start {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 22px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 0 auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .controls button {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+
+        .progress {
+            position: fixed;
+            bottom: 36px;
+            left: 24px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            z-index: 10;
+            background: rgba(248, 250, 252, 0.9);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        /* =========================================
+           MEDIA QUERIES PARA CELULAR (MOBILE FIRST)
+           ========================================= */
+        @media (max-width: 768px) {
+            body {
+                background-color: var(--bg-color);
+            }
+
+            .deck-stage {
+                max-height: none;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .slide {
+                padding: 40px 20px 100px 20px; /* Espaço extra no rodapé para os controles */
+                justify-content: flex-start;
+            }
+
+            h1 { font-size: 36px; }
+            p.subtitle { font-size: 18px; margin-bottom: 32px; }
+            h2.question-title { font-size: 22px; margin-bottom: 24px; }
+
+            .options-grid {
+                grid-template-columns: 1fr; /* Coluna única no celular */
+                gap: 12px;
+            }
+
+            .option {
+                padding: 16px;
+                font-size: 16px;
+                border-radius: 12px;
+            }
+
+            .btn-start {
+                width: 100%;
+                justify-content: center;
+                font-size: 18px;
+                padding: 16px 24px;
+            }
+
+            .controls {
+                bottom: 16px;
+                right: 16px;
+            }
+
+            .progress {
+                bottom: 28px;
+                left: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="deck-stage" id="deckStage">
+
+        <!-- Slide 0: Abertura -->
+        <div class="slide active" id="slide-0">
+            <h1 contenteditable="true">Quiz: Orion e o Escuro</h1>
+            <p class="subtitle" contenteditable="true">Uma jornada sobre medos, fé e coragem</p>
+            <button class="btn-start" onclick="nextSlide()">
+                <i class="fas fa-play"></i> Iniciar Quiz
+            </button>
+        </div>
+
+        <!-- Slide 1 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">1. Qual é o maior de todos os medos do Orion, aquele que o paralisa toda noite?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) Palhaços assassinos</div>
+                <div class="option" contenteditable="true">B) Tirar nota baixa na escola</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> C) O Escuro</div>
+                <div class="option" contenteditable="true">D) Ondas de celular</div>
+            </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">2. O que o Orion usa para registrar todos os seus medos cotidianos?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) Um tablet de última geração</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> B) Um caderno detalhado com anotações e desenhos</div>
+                <div class="option" contenteditable="true">C) Um gravador de voz antigo</div>
+                <div class="option" contenteditable="true">D) Um blog na internet</div>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">3. Quando o Escuro ganha vida, como é a sua verdadeira personalidade?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) Assustadora e cruel</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> B) Doce, carismática e um pouco insegura</div>
+                <div class="option" contenteditable="true">C) Fria e calculista</div>
+                <div class="option" contenteditable="true">D) Barulhenta e irritada</div>
+            </div>
+        </div>
+
+        <!-- Slide 4 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">4. Conexão Bíblica: Em Gênesis 1, Deus cria o dia e a noite. O que o filme e a Bíblia nos ensinam sobre a noite?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) Que a noite foi um erro da criação</div>
+                <div class="option" contenteditable="true">B) Que a noite é um castigo para quem não dorme</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> C) Que a noite tem um propósito essencial e também é criação de Deus</div>
+                <div class="option" contenteditable="true">D) Que devemos ter medo do escuro para sempre</div>
+            </div>
+        </div>
+
+        <!-- Slide 5 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">5. Qual é o trato que o Escuro propõe para o Orion?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) Jogar videogame a noite toda</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> B) Uma viagem de 24 horas ao redor do mundo para ver o trabalho dele</div>
+                <div class="option" contenteditable="true">C) Esconder-se debaixo da cama até o amanhecer</div>
+                <div class="option" contenteditable="true">D) Lutar contra monstros imaginários</div>
+            </div>
+        </div>
+
+        <!-- Slide 6 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">6. Qual entidade do "turno da noite" usa travesseiros e calmantes para ajudar as pessoas?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) Insônia</div>
+                <div class="option" contenteditable="true">B) Silêncio</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> C) Sono</div>
+                <div class="option" contenteditable="true">D) Bons Sonhos</div>
+            </div>
+        </div>
+
+        <!-- Slide 7 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">7. Conexão Bíblica: Orion sofre com muita ansiedade. O que a Bíblia diz em Isaías 41:10 para nos ajudar nesses momentos?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) "Fuja dos seus problemas o mais rápido que puder."</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> B) "Não temas, porque eu sou contigo."</div>
+                <div class="option" contenteditable="true">C) "O medo é a única resposta certa."</div>
+                <div class="option" contenteditable="true">D) "Esconda-se até a tempestade passar."</div>
+            </div>
+        </div>
+
+        <!-- Slide 8 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">8. O que a entidade "Insônia" faz durante a noite?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) Canta canções de ninar</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> B) Sussurra preocupações no ouvido das pessoas para acordá-las</div>
+                <div class="option" contenteditable="true">C) Prepara um lanche da madrugada</div>
+                <div class="option" contenteditable="true">D) Apaga as luzes da rua</div>
+            </div>
+        </div>
+
+        <!-- Slide 9 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">9. Qual entidade é super sensível e suga todo o barulho do ambiente?</h2>
+            <div class="options-grid">
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> A) Silêncio</div>
+                <div class="option" contenteditable="true">B) Ruídos Misteriosos</div>
+                <div class="option" contenteditable="true">C) Escuro</div>
+                <div class="option" contenteditable="true">D) Bons Sonhos</div>
+            </div>
+        </div>
+
+        <!-- Slide 10 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">10. Conexão Bíblica: O Escuro se sente rejeitado e odiado por todos. Como Jesus nos ensina a tratar aqueles que são rejeitados pela sociedade?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) Devemos ignorá-los</div>
+                <div class="option" contenteditable="true">B) Devemos rir deles</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> C) Devemos amá-los e acolhê-los</div>
+                <div class="option" contenteditable="true">D) Devemos mandá-los embora</div>
+            </div>
+        </div>
+
+        <!-- Slide 11 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">11. O que o Orion diz por impulso que magoa profundamente o Escuro?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) Que o Escuro é feio</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> B) Que a Luz do Dia é muito melhor e faz as pessoas se sentirem seguras</div>
+                <div class="option" contenteditable="true">C) Que ele prefere a entidade Insônia</div>
+                <div class="option" contenteditable="true">D) Que a noite é muito chata</div>
+            </div>
+        </div>
+
+        <!-- Slide 12 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">12. O que acontece com o Escuro após ouvir o comentário do Orion?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) Ele dá risada e ignora</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> B) Ele entra em uma depressão existencial e se recusa a trabalhar</div>
+                <div class="option" contenteditable="true">C) Ele decide virar um super-herói</div>
+                <div class="option" contenteditable="true">D) Ele se transforma na Luz do Dia</div>
+            </div>
+        </div>
+
+        <!-- Slide 13 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">13. Conexão Bíblica: A Luz do Dia no filme é mostrada como radiante, mas muito egocêntrica (orgulhosa). O que Provérbios 16:18 diz sobre o orgulho?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) O orgulho é a chave para o sucesso</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> B) A soberba (orgulho) precede a queda</div>
+                <div class="option" contenteditable="true">C) Devemos ser orgulhosos o tempo todo</div>
+                <div class="option" contenteditable="true">D) O orgulho traz paz ao coração</div>
+            </div>
+        </div>
+
+        <!-- Slide 14 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">14. O que acontece com o mundo quando a Luz do Dia brilha sem parar?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) Todo mundo ganha superpoderes</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> B) As pessoas ficam exaustas, o calor aumenta e o caos se instala</div>
+                <div class="option" contenteditable="true">C) As plantas crescem mais rápido e tudo fica perfeito</div>
+                <div class="option" contenteditable="true">D) As pessoas param de trabalhar e só brincam</div>
+            </div>
+        </div>
+
+        <!-- Slide 15 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">15. Qual é o grande plot twist (reviravolta) no meio do filme?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) Orion estava sonhando o tempo todo</div>
+                <div class="option" contenteditable="true">B) O Escuro era, na verdade, um alienígena</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> C) A história está sendo contada pelo Orion adulto para sua filha</div>
+                <div class="option" contenteditable="true">D) A Luz do Dia era a mãe do Orion</div>
+            </div>
+        </div>
+
+        <!-- Slide 16 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">16. Conexão Bíblica: O mundo no filme entra em colapso sem a noite porque as pessoas precisam dormir. Qual princípio bíblico da criação fala sobre a importância do descanso?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) O dilúvio</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> B) O sétimo dia (o dia de descanso)</div>
+                <div class="option" contenteditable="true">C) A torre de Babel</div>
+                <div class="option" contenteditable="true">D) A travessia do Mar Vermelho</div>
+            </div>
+        </div>
+
+        <!-- Slide 17 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">17. Qual é o nome da filha do Orion?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) Aurora</div>
+                <div class="option" contenteditable="true">B) Luna</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> C) Hypatia</div>
+                <div class="option" contenteditable="true">D) Estela</div>
+            </div>
+        </div>
+
+        <!-- Slide 18 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">18. O que a filha do Orion decide fazer quando percebe que o pai não sabe terminar a história?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) Ela vai dormir chateada</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> B) Ela "entra" na narrativa e viaja para o passado para ajudar</div>
+                <div class="option" contenteditable="true">C) Ela rasga o caderno de medos</div>
+                <div class="option" contenteditable="true">D) Ela liga a televisão</div>
+            </div>
+        </div>
+
+        <!-- Slide 19 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">19. Conexão Bíblica: Orion e o Escuro se tornam grandes amigos e se ajudam. O que Eclesiastes 4:9 diz sobre o trabalho em equipe?</h2>
+            <div class="options-grid">
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> A) "É melhor serem dois do que um."</div>
+                <div class="option" contenteditable="true">B) "Cada um por si."</div>
+                <div class="option" contenteditable="true">C) "Amigos atrapalham o caminho."</div>
+                <div class="option" contenteditable="true">D) "O silêncio vale mais que a amizade."</div>
+            </div>
+        </div>
+
+        <!-- Slide 20 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">20. Onde o Escuro vai parar quando desaparece no meio da luz total?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) No fundo do oceano</div>
+                <div class="option" contenteditable="true">B) No espaço sideral</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> C) No mundo dos sonhos</div>
+                <div class="option" contenteditable="true">D) Na escola do Orion</div>
+            </div>
+        </div>
+
+        <!-- Slide 21 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">21. Qual entidade é responsável por criar histórias maravilhosas na mente de quem dorme?</h2>
+            <div class="options-grid">
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> A) Bons Sonhos</div>
+                <div class="option" contenteditable="true">B) Sono</div>
+                <div class="option" contenteditable="true">C) Ruídos Misteriosos</div>
+                <div class="option" contenteditable="true">D) Silêncio</div>
+            </div>
+        </div>
+
+        <!-- Slide 22 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">22. Conexão Bíblica: Hypatia ajuda seu pai a resgatar o Escuro. Qual mandamento fala sobre a relação de honra e cuidado na família?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) Não furtarás</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> B) Honra teu pai e tua mãe</div>
+                <div class="option" contenteditable="true">C) Não dirás falso testemunho</div>
+                <div class="option" contenteditable="true">D) Lembra-te do dia de sábado</div>
+            </div>
+        </div>
+
+        <!-- Slide 23 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">23. Como as entidades do "turno da noite" reagem inicialmente quando Orion elogia a Luz do Dia?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) Elas fazem uma festa</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> B) Elas começam a questionar o próprio valor</div>
+                <div class="option" contenteditable="true">C) Elas atacam o Orion</div>
+                <div class="option" contenteditable="true">D) Elas vão tirar férias</div>
+            </div>
+        </div>
+
+        <!-- Slide 24 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">24. O que o jovem Orion aprende sobre o medo no final da jornada?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) Que o medo não existe</div>
+                <div class="option" contenteditable="true">B) Que ele deve ter medo de tudo para se proteger</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> C) Que ter medo é normal, mas não se pode deixar o medo controlar suas escolhas</div>
+                <div class="option" contenteditable="true">D) Que apenas as crianças têm medo</div>
+            </div>
+        </div>
+
+        <!-- Slide 25 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">25. Conexão Bíblica: O filme mostra que precisamos tanto da luz quanto do escuro. Como isso reflete a sabedoria de Deus em Eclesiastes 3?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) "Tudo é vaidade."</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> B) "Há um tempo determinado para todas as coisas."</div>
+                <div class="option" contenteditable="true">C) "O sol brilha para os justos."</div>
+                <div class="option" contenteditable="true">D) "A noite é apenas para os ímpios."</div>
+            </div>
+        </div>
+
+        <!-- Slide 26 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">26. Qual entidade cria pequenos barulhos estalando pisos e paredes?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) Silêncio</div>
+                <div class="option" contenteditable="true">B) Insônia</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> C) Ruídos Misteriosos</div>
+                <div class="option" contenteditable="true">D) Sono</div>
+            </div>
+        </div>
+
+        <!-- Slide 27 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">27. Como o filme termina em relação à família de Orion?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) Mostra que eles se mudaram para outra galáxia</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> B) Mostra um ciclo familiar, onde o amadurecimento passa de geração em geração</div>
+                <div class="option" contenteditable="true">C) Mostra que Orion nunca mais falou com sua filha</div>
+                <div class="option" contenteditable="true">D) Mostra que eles esqueceram tudo o que aconteceu</div>
+            </div>
+        </div>
+
+        <!-- Slide 28 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">28. Conexão Bíblica: O Escuro precisou ser resgatado para que o mundo não fosse destruído. Na fé cristã, quem é o nosso grande resgatador (Salvador)?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) Moisés</div>
+                <div class="option" contenteditable="true">B) Davi</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> C) Jesus</div>
+                <div class="option" contenteditable="true">D) Elias</div>
+            </div>
+        </div>
+
+        <!-- Slide 29 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">29. Qual é a idade do Orion no início da história?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) 8 anos</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> B) 11 anos</div>
+                <div class="option" contenteditable="true">C) 15 anos</div>
+                <div class="option" contenteditable="true">D) 18 anos</div>
+            </div>
+        </div>
+
+        <!-- Slide 30 -->
+        <div class="slide">
+            <h2 class="question-title" contenteditable="true">30. Conexão Bíblica: No fim, Orion encontra tranquilidade e equilíbrio. Qual "Fruto do Espírito" (Gálatas 5:22) representa essa calma interior que Deus nos dá?</h2>
+            <div class="options-grid">
+                <div class="option" contenteditable="true">A) Ira</div>
+                <div class="option" contenteditable="true">B) Inveja</div>
+                <div class="option correct" contenteditable="true"><i class="fas fa-check-circle"></i> C) Paz</div>
+                <div class="option" contenteditable="true">D) Orgulho</div>
+            </div>
+        </div>
+
+        <!-- Slide Final -->
+        <div class="slide">
+            <h1 contenteditable="true">Fim de Jogo!</h1>
+            <p class="subtitle" contenteditable="true">Vocês enfrentaram o escuro e venceram.</p>
+            <div style="text-align: center; margin-top: 20px;">
+                <h2 style="color: var(--primary);" contenteditable="true">Pontuação Final: ___ / 30</h2>
+            </div>
+        </div>
+
+        <!-- Controles e Progresso -->
+        <div class="progress" id="progressText">Abertura</div>
+        <div class="controls">
+            <button onclick="prevSlide()" title="Anterior"><i class="fas fa-chevron-left"></i></button>
+            <button onclick="nextSlide()" title="Próximo"><i class="fas fa-chevron-right"></i></button>
+        </div>
+
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const progressText = document.getElementById('progressText');
+        const deckStage = document.getElementById('deckStage');
+        let currentSlide = 0;
+
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                slide.classList.toggle('active', index === currentSlide);
+            });
+
+            if (currentSlide === 0) {
+                progressText.innerText = "Abertura";
+            } else if (currentSlide === slides.length - 1) {
+                progressText.innerText = "Conclusão";
+            } else {
+                progressText.innerText = `Pergunta ${currentSlide} de ${slides.length - 2}`;
+            }
+
+            // Volta o scroll pro topo ao trocar de slide no celular
+            deckStage.scrollTop = 0;
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        // Navegação por teclado (Setas)
+        document.addEventListener('keydown', (e) => {
+            if (document.activeElement.isContentEditable) return;
+
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+
+        // Navegação por Swipe (Touch) para Celular
+        let touchstartX = 0;
+        let touchendX = 0;
+        const minSwipeDistance = 50;
+
+        function handleGesture() {
+            if (document.activeElement.isContentEditable) return;
+
+            if (touchendX < touchstartX - minSwipeDistance) {
+                nextSlide(); // Deslizou para a esquerda
+            }
+            if (touchendX > touchstartX + minSwipeDistance) {
+                prevSlide(); // Deslizou para a direita
+            }
+        }
+
+        deckStage.addEventListener('touchstart', e => {
+            touchstartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        deckStage.addEventListener('touchend', e => {
+            touchendX = e.changedTouches[0].screenX;
+            handleGesture();
+        }, { passive: true });
+
+    </script>
+</body>
+</html>
